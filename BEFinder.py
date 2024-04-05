@@ -9,25 +9,26 @@ BASE = pathlib.Path()
 
 def BEfinder(user_name, project_name, sample_date, sample_list):
     sample_dir = BASE / user_name / project_name / "Input"
-    with open(sample_dir / sample_date + ".csv", 'r') as f:
+
+#ref csv file : amplicon sequence, target start position
+    with open(f"{sample_dir / sample_date}.csv", 'r') as f:
         ref_file = csv.reader(f)
-    
-    #ref csv file : amplicon sequence, target start position
-    ref_data = next(ref_file)
+        ref_data = next(ref_file)
+
     ref_seq = ref_data[0]
     target_pos = ref_data[1]
 
     for sample in sample_list:
-        f = open(f'result/eVLP/{sample}/{sample}.extendedFrags.fastq')
+        f = open(f'{sample_dir / sample_date / sample / sample}.extendedFrags.fastq')
         data = f.readlines()
         seq_list = list()
         num = 0
-        AG_conv = 0
+
         for line in data:
             line = line.strip()
             line = line[4:]
-            if line.startswith(ref_seq[4:24]) and len(line)==200:
-                target=line[79:104]
+            if line.startswith(ref_seq[:20]):
+                target=line[target_pos:target_pos+25]
                 target_list = list(target)
                 seq_list.append(target_list)
                 num += 1
@@ -46,8 +47,8 @@ def BEfinder(user_name, project_name, sample_date, sample_list):
         out = np.concatenate((out, seq_vector.sum(axis=1)),axis=0)
         
         df = pd.DataFrame(out)
-        df.index=['sample'+str(i),'A','T','G','C']
-        df.to_csv('result/eVLP/'+str(i)+'result.csv', header=True, index=True)
+        df.index=[sample,'A','T','G','C']
+        df.to_csv(f'{BASE / user_name / project_name / "Output" / sample_date / sample}result.csv', header=True, index=True)
 
 if __name__ == '__main__':
     print('RUN Base Editing Finder program')

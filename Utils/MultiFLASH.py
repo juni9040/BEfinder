@@ -18,10 +18,12 @@ def merge(user_name, project_name, sample_date):
     input_dir = BASE / user_name / project_name / "Input"
     output_dir = BASE / user_name / project_name / "Output"
     sample_dir = input_dir / sample_date
+    result_dir = output_dir / sample_date
     input_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     sample_dir.mkdir(parents=True, exist_ok=True)
-
+    result_dir.mkdir(parents=True, exist_ok=True)
+    
     input_files = [file for file in os.listdir(input_dir / sample_date) if file.endswith(r'.fastq.gz')]
     input_files.sort()
     print(input_dir)
