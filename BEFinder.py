@@ -16,7 +16,7 @@ def BEfinder(user_name, project_name, sample_date, sample_list):
         ref_data = next(ref_file)
 
     ref_seq = ref_data[0]
-    target_pos = ref_data[1]
+    target_pos = int(ref_data[1])
 
     for sample in sample_list:
         f = open(f'{sample_dir / sample_date / sample / sample}.extendedFrags.fastq')
@@ -36,14 +36,14 @@ def BEfinder(user_name, project_name, sample_date, sample_list):
 
         #BEfinder ver 2.0 : result with all base 
         seq_vector = np.array(seq_list)
-        ref_vector = np.array(list(ref_seq))
+        ref_vector = np.array(list(ref_seq[target_pos:target_pos+25]))
         print(seq_vector.shape, ref_vector.shape)
         base_array = np.array([[['A']], [['T']], [['G']], [['C']]])
         seq_vector = seq_vector==base_array
         ref_vector = ref_vector==base_array
         mut_vector = (seq_vector!=ref_vector) & seq_vector
         print(seq_vector.shape, ref_vector.shape, mut_vector.shape)
-        out = [np.array(list(ref_seq))]
+        out = [np.array(list(ref_seq[target_pos:target_pos+25]))]
         out = np.concatenate((out, seq_vector.sum(axis=1)),axis=0)
         
         df = pd.DataFrame(out)
